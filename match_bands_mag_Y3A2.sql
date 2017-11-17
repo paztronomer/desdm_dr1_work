@@ -2,6 +2,7 @@
 -- Select the aperture fluxes, fwhm, mag_auto_i, mag_radius, kron_radius, petro_radius
 --
 select y3a2.coadd_object_id,
+       xt.EXT_WAVG ext_wavg,
        g.mag_auto g_mag_auto,
        r.mag_auto r_mag_auto,
        i.mag_auto i_mag_auto,
@@ -46,4 +47,5 @@ join y3a2_coadd_object_band_r r on r.coadd_object_id=y3.coadd_object_id
 join y3a2_coadd_object_band_i i on i.coadd_object_id=y3.coadd_object_id
 join y3a2_coadd_object_band_z z on z.coadd_object_id=y3.coadd_object_id
 join y3a2_coadd_object_band_Y Y on Y.coadd_object_id=y3.coadd_object_id
+join BECHTOL.Y3A2_EXT_MASH_V2 xt on xt.coadd_object_id=y3.coadd_object_id
 join y3a2_coadd_object_summary y3a2 on y3a2.coadd_object_id=y3.coadd_object_id;
