@@ -1,11 +1,21 @@
---
--- Select the aperture fluxes, fwhm, mag_auto_i, flux_radius, kron_radius, petro_radius
---
+-- UPADTE: include FLAGS, limit magnitude of 21 mag per band
+-- output easyaccess: Y3A2_COADD_SUMMARY_flux_extwavg_rad_flags_mag21.fits
 select y3a2.coadd_object_id,
+       y3a2.imaflags_iso_g imaflags_iso_g,
+       y3a2.imaflags_iso_r imaflags_iso_r,
+       y3a2.imaflags_iso_i imaflags_iso_i,
+       y3a2.imaflags_iso_z imaflags_iso_z,
+       y3a2.imaflags_iso_Y imaflags_iso_Y,
+       y3a2.flags_g flags_g,
+       y3a2.flags_r flags_r,
+       y3a2.flags_i flags_i,
+       y3a2.flags_z flags_z,
+       y3a2.flags_Y flags_Y,
        xt.EXT_WAVG ext_wavg,
        g.mag_auto g_mag_auto,
        g.fwhmpsf_image g_fwhmpsf_image, g.fwhm_image g_fwhm_image,
-       g.flux_radius g_flux_radius, g.kron_radius g_kron_radius, g.petro_radius g_petro_radius,      r.mag_auto r_mag_auto,
+       g.flux_radius g_flux_radius, g.kron_radius g_kron_radius, g.petro_radius g_petro_radius,
+       r.mag_auto r_mag_auto,
        r.fwhmpsf_image r_fwhmpsf_image, r.fwhm_image r_fwhm_image,
        r.flux_radius r_flux_radius, r.kron_radius r_kron_radius, r.petro_radius r_petro_radius,
        i.mag_auto i_mag_auto,
@@ -38,13 +48,17 @@ select y3a2.coadd_object_id,
        Y.flux_aper_7 Y_flux_aper_7, Y.flux_aper_8 Y_flux_aper_8, Y.flux_aper_9 Y_flux_aper_9,
        Y.flux_aper_10 Y_flux_aper_10, Y.flux_aper_11 Y_flux_aper_11, Y.flux_aper_12 Y_flux_aper_12
 from (select coadd_object_id
-  from y3a2_coadd_object_summary sample(15)
-  where mag_auto_i < 22.5
-  ) y3
-join y3a2_coadd_object_band_g g on g.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_r r on r.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_i i on i.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_z z on z.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_Y Y on Y.coadd_object_id=y3.coadd_object_id
-join BECHTOL.Y3A2_EXT_MASH_V2 xt on xt.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_summary y3a2 on y3a2.coadd_object_id=y3.coadd_object_id;
+  from y3a2_coadd_object_summary sample(5)
+  where mag_auto_g < 21
+    and mag_auto_r < 21
+    and mag_auto_i < 21
+    and mag_auto_z < 21
+    and mag_auto_Y < 21
+) suby3
+join y3a2_coadd_object_band_g g on g.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_r r on r.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_i i on i.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_z z on z.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_Y Y on Y.coadd_object_id=suby3.coadd_object_id
+join BECHTOL.Y3A2_EXT_MASH_V2 xt on xt.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_summary y3a2 on y3a2.coadd_object_id=suby3.coadd_object_id;

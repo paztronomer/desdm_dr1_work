@@ -1,7 +1,16 @@
---
--- Select the aperture fluxes, fwhm, mag_auto_i, mag_radius, kron_radius, petro_radius
---
+-- UPADTE: include FLAGS, limit magnitude of 21 mag per band
+-- output on easyaccess web: Y3A2_COADD_SUMMARY_mag21_extwavg_flags.fits
 select y3a2.coadd_object_id,
+       y3a2.imaflags_iso_g imaflags_iso_g,
+       y3a2.imaflags_iso_r imaflags_iso_r,
+       y3a2.imaflags_iso_i imaflags_iso_i,
+       y3a2.imaflags_iso_z imaflags_iso_z,
+       y3a2.imaflags_iso_Y imaflags_iso_Y,
+       y3a2.flags_g flags_g,
+       y3a2.flags_r flags_r,
+       y3a2.flags_i flags_i,
+       y3a2.flags_z flags_z,
+       y3a2.flags_Y flags_Y,
        xt.EXT_WAVG ext_wavg,
        g.mag_auto g_mag_auto,
        r.mag_auto r_mag_auto,
@@ -39,13 +48,17 @@ select y3a2.coadd_object_id,
        y3a2.wavg_mag_psf_z z_wavg_mag_psf,
        y3a2.wavg_mag_psf_y Y_wavg_mag_psf
 from (select coadd_object_id
-  from y3a2_coadd_object_summary sample(15)
-  where mag_auto_i < 22.5
-  ) y3
-join y3a2_coadd_object_band_g g on g.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_r r on r.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_i i on i.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_z z on z.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_band_Y Y on Y.coadd_object_id=y3.coadd_object_id
-join BECHTOL.Y3A2_EXT_MASH_V2 xt on xt.coadd_object_id=y3.coadd_object_id
-join y3a2_coadd_object_summary y3a2 on y3a2.coadd_object_id=y3.coadd_object_id;
+  from y3a2_coadd_object_summary sample(5)
+  where mag_auto_g < 21
+    and mag_auto_r < 21
+    and mag_auto_i < 21
+    and mag_auto_z < 21
+    and mag_auto_Y < 21
+  ) suby3
+join y3a2_coadd_object_band_g g on g.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_r r on r.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_i i on i.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_z z on z.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_band_Y Y on Y.coadd_object_id=suby3.coadd_object_id
+join BECHTOL.Y3A2_EXT_MASH_V2 xt on xt.coadd_object_id=suby3.coadd_object_id
+join y3a2_coadd_object_summary y3a2 on y3a2.coadd_object_id=suby3.coadd_object_id;
